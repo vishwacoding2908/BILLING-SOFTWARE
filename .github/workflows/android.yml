@@ -1,1 +1,34 @@
+name: Build Android APK From Web Source
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Source Assets
+      uses: actions/checkout@v4
+
+    - name: Initialize Runtime Environment
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Compile Code to Mobile Application
+      run: |
+        npx web-to-apk init --yes || true
+        npx web-to-apk build
+        mkdir -p output && cp *.apk output/billing-app.apk || true
+
+    - name: Deliver Package Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: billing-software-package
+        path: |
+          *.apk
+          output/billing-app.apk
 
