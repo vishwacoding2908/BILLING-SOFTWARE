@@ -1,8 +1,8 @@
-name: Build Android APK via Capacitor
+name: Build Native Android APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" ] # Change to "master" if your default branch is master
   workflow_dispatch:
 
 jobs:
@@ -10,36 +10,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Source Assets
+    - name: Checkout Repository Code
       uses: actions/checkout@v4
 
-    - name: Initialize Java Environment
+    - name: Set up Java JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
+        cache: gradle
 
-    - name: Initialize Runtime Node Environment
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
+    - name: Grant Execute Permission for Gradle Wrapper
+      run: chmod +x gradlew
 
-    - name: Restructure Project Files
-      run: |
-        mkdir -p www
-        find . -maxdepth 1 -type f -not -name ".*" -exec cp {} www/ \;
-        cp -r assets www/ 2>/dev/null || true
+    - name: Compile and Assemble Debug APK
+      run: ./gradlew assembleDebug
 
-    - name: Install and Build Android App wrapper
-      run: |
-        npm install @capacitor/core @capacitor/cli @capacitor/android
-        npx cap init "Billing App" "com.vishwacoding.billingapp" --web-dir=www
-        npx cap add android
-        npx cap sync
-        cd android && chmod +x gradlew && ./gradlew assembleDebug
-
-    - name: Deliver Package Artifact
+    - name: Upload Finished APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: billing-software-apk
-        path: android/app/build/outputs/apk/debug/app-debug.apk
+        name: quickbill-pos-apk
+        path: app/build/outputs/apk/debug/app-debug.apk
+      with:
+        name: quickbill-pos-apk
+        path: app/build/outputs/apk/debug/app-debug.apk
