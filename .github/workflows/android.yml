@@ -1,4 +1,4 @@
-name: Build Android APK From Web Source
+name: Build Android APK via Capacitor
 
 on:
   push:
@@ -13,22 +13,27 @@ jobs:
     - name: Checkout Source Assets
       uses: actions/checkout@v4
 
-    - name: Initialize Runtime Environment
+    - name: Initialize Java Environment
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Initialize Runtime Node Environment
       uses: actions/setup-node@v4
       with:
-        node-version: 18
+        node-version: 20
 
-    - name: Compile Code to Mobile Application
+    - name: Install and Build Android App wrapper
       run: |
-        npx web-to-apk init --yes || true
-        npx web-to-apk build
-        mkdir -p output && cp *.apk output/billing-app.apk || true
+        npm install @capacitor/core @capacitor/cli @capacitor/android
+        npx cap init "Billing App" "com.vishwacoding.billingapp" --web-dir=.
+        npx cap add android
+        npx cap sync
+        cd android && chmod +x gradlew && ./gradlew assembleDebug
 
     - name: Deliver Package Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: billing-software-package
-        path: |
-          *.apk
-          output/billing-app.apk
-
+        name: billing-software-apk
+        path: android/app/build/outputs/apk/debug/app-debug.apk
