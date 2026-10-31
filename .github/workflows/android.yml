@@ -24,10 +24,16 @@ jobs:
       with:
         node-version: 20
 
+    - name: Restructure Project Files
+      run: |
+        mkdir -p www
+        find . -maxdepth 1 -type f -not -name ".*" -exec cp {} www/ \;
+        cp -r assets www/ 2>/dev/null || true
+
     - name: Install and Build Android App wrapper
       run: |
         npm install @capacitor/core @capacitor/cli @capacitor/android
-        npx cap init "Billing App" "com.vishwacoding.billingapp" --web-dir=.
+        npx cap init "Billing App" "com.vishwacoding.billingapp" --web-dir=www
         npx cap add android
         npx cap sync
         cd android && chmod +x gradlew && ./gradlew assembleDebug
