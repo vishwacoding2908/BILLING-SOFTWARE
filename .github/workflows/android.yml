@@ -31,6 +31,3 @@ jobs:
       with:
         name: quickbill-pos-apk
         path: app/build/outputs/apk/debug/app-debug.apk
-      with:
-        name: quickbill-pos-apk
-        path: app/build/outputs/apk/debug/app-debug.apk
