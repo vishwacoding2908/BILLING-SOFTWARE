@@ -1,0 +1,6 @@
+{
+  "name": "QuickBill POS",
+  "description": "Simple POS billing software with revenue dashboard, menu management, and secure admin settings",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
