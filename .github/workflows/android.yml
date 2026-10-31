@@ -1,9 +1,9 @@
-name: Build Android APK
+name: Build Android APK from Web App
 
 on:
   push:
-    branches: [ "main" ] # Change to "master" if your default branch is master
-  workflow_dispatch:      # Allows you to trigger the build manually
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,21 +13,21 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
       with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: gradle
+        node-version: 18
 
-    - name: Grant Execute Permission for Gradle
-      run: chmod +x gradlew
-
-    - name: Build with Gradle
-      run: ./gradlew assembleDebug
+    - name: Package Web App to APK
+      run: |
+        npx web-to-apk init --yes || true
+        npx web-to-apk build
+        mkdir -p output && cp *.apk output/app-release.apk || true
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: app-debug-apk
-        path: app/build/outputs/apk/debug/app-debug.apk
+        name: billing-software-apk
+        path: |
+          *.apk
+          output/app-release.apk
